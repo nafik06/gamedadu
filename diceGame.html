@@ -86,69 +86,80 @@
         </div>
     
 
+
+
     <div class="container bottom">
-        <button type="button" class="btn" onclick="rollTheDice()">
-            Roll The Dice</button>
+       <button class="btn" onclick="game.rollDice()">Roll The Dice</button>
         
     </div>
     <div class="container bottom">
-        <button type="button" class="btn" onclick="editNames()">
-            Edit Names</button>
         
+        <button class="btn" onclick="game.editNames()">Edit Names</button>
     </div>
 </div>
-    <script>
-        //player Name
-        let player1 = "Player1";
-        let player2 = "Player2";
+   <script>
+class Player {
+    constructor(name, imgSelector) {
+        this.name = name;
+        this.img = document.querySelector(imgSelector);
+    }
 
-        function editNames() {
-            player1 = prompt("Change Player1 Name")
-            player2 = prompt("Change Player2 Name")
+    roll() {
+        const result = Math.floor(Math.random() * 6) + 1;
+        this.img.src = "dice" + result + ".png";
+        return result;
+    }
 
-            if (player1.length < 1 || player2.length < 1) {
-                alert('please enter valid name');
-                return;
+    rollingAnimation() {
+        this.img.src = "diceroll.gif";
+    }
+}
+
+class Game {
+    constructor() {
+        this.player1 = new Player("Player1", ".img1");
+        this.player2 = new Player("Player2", ".img2");
+        this.resultDisplay = document.querySelector("h1");
+    }
+
+    editNames() {
+        let p1 = prompt("Change Player 1 Name");
+        let p2 = prompt("Change Player 2 Name");
+
+        if (!p1 || !p2) return alert("Please enter valid names");
+
+        this.player1.name = p1;
+        this.player2.name = p2;
+
+        document.querySelector("p.Player1").textContent = p1;
+        document.querySelector("p.Player2").textContent = p2;
+    }
+
+    rollDice() {
+        // tampilkan animasi
+        this.player1.rollingAnimation();
+        this.player2.rollingAnimation();
+        this.resultDisplay.innerHTML = "";
+
+        setTimeout(() => {
+            const r1 = this.player1.roll();
+            const r2 = this.player2.roll();
+
+            if (r1 === r2) {
+                this.resultDisplay.textContent = "Draw!";
+            } else if (r1 < r2) {
+                this.resultDisplay.textContent = this.player2.name + " WINS!";
+            } else {
+                this.resultDisplay.textContent = this.player1.name + " WINS!";
             }
-            document.querySelector("p.Player1")
-                .innerHTML = player1;
+        }, 2500);
+    }
+}
 
-            document.querySelector("p.Player2")
-                .innerHTML = player2;
-        }
+// buat objek Game
+const game = new Game();
+</script>
 
-
-        function rollTheDice() {
-            let diceNum1 = document.querySelector(".img1");
-            let diceNum2 = document.querySelector(".img2");
-
-            diceNum1.setAttribute("src", "diceroll.gif")
-            diceNum2.setAttribute("src", "diceroll.gif")
-
-            let result = document.querySelector('h1')
-            result.innerHTML = ""
-            setTimeout(() => {
-                let randomNumber1 = Math.floor(Math.random() * 6) + 1;
-                let randomNumber2 = Math.floor(Math.random() * 6) + 1;
-
-                diceNum1.setAttribute('src', 'dice' + randomNumber1 + '.png');
-                diceNum2.setAttribute('src', 'dice' + randomNumber2 + '.png');
-
-                //determine the winner
-                if (randomNumber1 === randomNumber2) {
-                    result.innerHTML = "Draw!"
-                }
-                else if (randomNumber1 < randomNumber2) {
-                    result.innerHTML = (player2 + " WINS!");
-                }
-                else {
-                    result.innerHTML = (player1 + " WINS!");
-                }
-
-            }, 2500);
-        }
-
-    </script>
 </body>
 
 </html>
